@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jarl Koha, veebiproge 2023</title>
+</head>
+<body>
+	<img src="/banner/banner.png" alt="Veebiprogrammeerimise kursuse bänner">
+	<h1>Nimed</h1>
+	<ul>
+		<!-- teeme ejs tsükkli, mis käib läbi masiivi wisdom. Iga uus vanasõna on sentence-->
+		<% names.forEach(function(person){ %>
+			<% allNames.push(person.split(',')); %>
+			<% allNames.forEach(function(persondata){ %>
+				<% if(person[0]{ %>
+					<li><%= person[0] %> <%= person[1] %>, salvestatud: <%= person[2] %>.</li>
+				<% }); %>
+			<% }); %>
+			<li><%= sentence %></li>
+		<% }); %>
+	</ul>
+	<hr>
+	<ul>
+		<li><a href="/">Avalehele</a></li>
+	</ul>
+	<hr>
+</body>
+</html>
