@@ -37,6 +37,36 @@ const timeOfDayET = function(){
     return partOfDay;
 }
 
+/*const dateConverter = function (date, format){
+    let dateParts = date.split('/');
+    let month = parseInt(dateParts[0]);
+    let day = parseInt(dateParts[1]);
+    let year = parseInt(dateParts[2]);
+
+    if (format === 'ET'){
+        return day + '.' + month + year;
+    } else if (format === 'EN') {
+        return month + ' ' + day + ' ' + year;
+    }
+};*/
+
+const dateConverter = function (date, format){
+    console.log("Type of date:", typeof date);  // Debugging line
+    console.log("Value of date:", date); 
+    let dateParts = date.split('/');
+    let month = parseInt(dateParts[0]).toString().padStart(2, '0');
+    let day = parseInt(dateParts[1]).toString().padStart(2, '0');
+    let year = parseInt(dateParts[2]);
+
+    if (format === 'ET'){
+        return day + '.' + month + '.' + year;
+    } else if (format === 'EN') {
+        return month + ' ' + day + ' ' + year;
+    } else {
+        console.warn('Unexpected format:', format);
+        return date; // return the original date or handle it differently
+    }
+};
 
 //ekspordin kõik asjad
-module.exports = {dateETFormatted: dateETFormatted, timeFormatted: timeFormatted, monthsET: monthNamesET, timeOfDayET: timeOfDayET};
+module.exports = {dateETFormatted: dateETFormatted, timeFormatted: timeFormatted, monthsET: monthNamesET, timeOfDayET: timeOfDayET, dateConverter: dateConverter};

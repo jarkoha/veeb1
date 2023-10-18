@@ -6,19 +6,13 @@
 </head>
 <body>
 	<img src="/banner/banner.png" alt="Veebiprogrammeerimise kursuse bänner">
-	<h1>Nimed</h1>
-	<ul>
+	<h1><%= h1 %></h1>
+	<ol>
 		<!-- teeme ejs tsükkli, mis käib läbi masiivi wisdom. Iga uus vanasõna on sentence-->
-		<% names.forEach(function(person){ %>
-			<% allNames.push(person.split(',')); %>
-			<% allNames.forEach(function(persondata){ %>
-				<% if(person[0]{ %>
-					<li><%= person[0] %> <%= person[1] %>, salvestatud: <%= person[2] %>.</li>
-				<% }); %>
-			<% }); %>
-			<li><%= sentence %></li>
+		<% entries.forEach(function(data){ %>
+				<li><%= data.firstName %> <%= data.lastName %>, mis salvestati: <%= data.date %>.</li>
 		<% }); %>
-	</ul>
+	</ol>
 	<hr>
 	<ul>
 		<li><a href="/">Avalehele</a></li>

@@ -1,5 +1,6 @@
 const express = require('express');
 const timeInfo = require('./dateTimeET');
+const dateInfo = require('./dateTimeET');
 const fs = require('fs');
 const app = express();
 
@@ -31,16 +32,31 @@ app.get('/wisdom', (req, res) => {
 });
 
 app.get('/namelist', (req, res) => {
-    let nameList = [];
+    let userEntries = [];
     fs.readFile('public/txtfiles/log.txt', 'utf-8', (err, data) => {
         if (err) {
             throw err;
         } else {
-            nameList = data.split(';');
-            for (person of nameList){
+            data = data.trim();
+            userEntries = data.split(';');
+            let userData = [];
 
+            for (let value of userEntries){
+                userData.push(value.split(',')); 
             }
-            res.render('justlistnames', {names: nameList, allNames: allNames});
+            let formattedData = [];
+            for (let entry of userData){
+                if (entry && entry.length >= 3) {
+                    const formattedEntry = {
+                        firstName: entry[0],
+                        lastName: entry[1],
+                        date: dateInfo.dateConverter(entry[2], 'ET')
+                    };
+                    formattedData.push(formattedEntry);
+                };
+            };
+            console.log(formattedData);
+            res.render('justlistnames', {h1: 'Nimekirjed', entries: formattedData});    
         }
     });
 });
