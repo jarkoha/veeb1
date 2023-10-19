@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jarl Koha, veebiproge 2023</title>
+</head>
+<body>
+	<img src="/banner/banner.png" alt="Veebiprogrammeerimise kursuse bänner">
+	<h1>Eesti film</h1>
+	<hr>
+	<ul>
+		<li><a href="/eestifilm">Eesti film</a></li>
+		<li><a href="/">Avalehele</a></li>
+	</ul>
+	<hr>
+	<h2>Filmi info</h2>
+	<form method="GET">
+		<lable for="filmIdInput">Vali millise fimi kohta infot soovid: </lable>
+		<input type="number" name="filmIdInput" id="filmIdInput" min="1" //max= + "<%= maxSql %>"// + value="1">
+		<input type="submit" name="filmIdSubmit" value="Otsi">
+	</form>
+</body>
+</html>

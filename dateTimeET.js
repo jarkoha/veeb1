@@ -51,8 +51,8 @@ const timeOfDayET = function(){
 };*/
 
 const dateConverter = function (date, format){
-    console.log("Type of date:", typeof date);  // Debugging line
-    console.log("Value of date:", date); 
+    //console.log("Type of date:", typeof date);  // Debugging line
+    //console.log("Value of date:", date); 
     let dateParts = date.split('/');
     let month = parseInt(dateParts[0]).toString().padStart(2, '0');
     let day = parseInt(dateParts[1]).toString().padStart(2, '0');

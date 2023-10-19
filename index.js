@@ -1,11 +1,25 @@
 const express = require('express');
-const timeInfo = require('./dateTimeET');
-const dateInfo = require('./dateTimeET');
 const fs = require('fs');
 const app = express();
+const mysql = require('mysql2');
+const bodyparser = require('body-parser');
+const timeInfo = require('./dateTimeET');
+const dateInfo = require('./dateTimeET');
+const dbInfo = require('../../vp23config');
+//Kuna rinde kasutab ajutiselt Inga andmebaasi, siis:
+const dataBase = 'if23_inga_pe_ta';
 
 app.set('view engine', 'ejs'); //view mootor, ejs on üks paljudest mootoritest 
 app.use(express.static('public'));
+app.use(bodyparser.urlencoded({extended: false}));
+
+//loon andmebaasi ühenduse
+const conn = mysql.createConnection({
+    host: dbInfo.configData.host,
+    user: dbInfo.configData.user,
+    password: dbInfo.configData.password,
+    database: dataBase
+});
 
 app.get('/', (req, res) => {
     //res.send('See töötab!');
@@ -55,27 +69,69 @@ app.get('/namelist', (req, res) => {
                     formattedData.push(formattedEntry);
                 };
             };
-            console.log(formattedData);
+            //console.log(formattedData);
             res.render('justlistnames', {h1: 'Nimekirjed', entries: formattedData});    
         }
     });
 });
 
+app.get('/eestifilm', (req, res) => {
+    
+    res.render('filmindex');
+});
 
-/*              let allData = data.split(";");
-                let allNames = [];
-				listAndmedOut = '\n\t<ul>';
-				for (person of allData){
-					allNames.push(person.split(',')); 
-				}
-				//console.log(allNames);
-				for (person of allNames){
-					if(person[0]){   //küsib kas masiivi viimasel elemendil on nimi või mitte ja teeb ainult siis list itemi
-						listAndmedOut += '\n\t\t<li>' + person[0] + ' ' + person[1] + ', salvestatud: ' + person[2] + '</li>';
-					}
-				}
-				listAndmedOut += '\n\t</ul>'
-				andmedPage(res, listAndmedOut);*/
+app.get('/eestifilm/filmiloend', (req, res) => {
+    let sql = 'SELECT title, production_year, duration FROM movie';
+    let sqlResult = [];
+    conn.query(sql, (err, result)=>{
+        if (err) {
+            res.render('filmlist', {filmlist: sqlResult});
+            throw err;
+            //conn.end(); ei kasuta neid, sest kui uuesti leht avada, siis connetion ei avane uuesti
+        } else {
+            //console.log(result);
+            res.render('filmlist', {filmlist: result});
+            //conn.end();
+        }
+    });
+    
+});
 
+app.get('/eestifilm/addfilmperson', (req, res) => {
+    res.render('addfilmperson');
+});
+
+app.post('/eestifilm/addfilmperson', (req, res) => {
+    //res.render('addfilmperson');
+    //res.send(req.body);
+    let notice = '';
+    let sql = 'INSERT INTO person (first_name, last_name, birth_date) VALUES(?, ?, ?)';
+    conn.query(sql, [req.body.firstNameInput, req.body.lastNameInput, req.body.birthDateInput], (err, result)=>{
+        if (err) {
+            notice = 'Andmete salvestamine ebaõnnestus!';
+            res.render('addfilmperson', {notice: notice});
+            throw err;
+        } else {
+            notice = req.body.firstNameInput + ' ' + req.body.lastNameInput + ' salvestamine õnnestus!';
+            res.render('addfilmperson', {notice: notice});
+        }
+    });
+});
+
+app.get('/eestifilm/singlemovie', (req, res) => {
+    let maxSql = 'SELECT COUNT(id) FROM movie'
+    res.render('singlemovie', {maxSql: maxSql}); //vaata see üle, kas saab nii
+});
+
+
+//teha leht /eestifilm/singlemovie
+//loendame, mitu filmi on ja teeme vormi inputi <input type="number" min="1" max="x" value="1"> ja lisada submit nupp
+//x-ile tuleb väärtus index.js faili functionist SELECT COUNT(id) FROM movie
+//POST: lugeda andmebaasist kõik valitud numbriga filmi andmed ja ekraanile tuua
+//<h3>Pealkiri</h3>
+//<p>pealkiri</p>
+//<h3>Kestvus</h3>
+//<p>kestvus</p>
+//SELECT movie WHERE id=(vormis valitud number)
 
 app.listen(5134);
