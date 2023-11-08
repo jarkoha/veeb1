@@ -15,9 +15,24 @@
 	<hr>
 	<h2>Filmi info</h2>
 	<form method="GET">
-		<lable for="filmIdInput">Vali millise fimi kohta infot soovid: </lable>
-		<input type="number" name="filmIdInput" id="filmIdInput" min="1" //max= + "<%= maxSql %>"// + value="1">
+		<label for="filmIdInput">Vali millise fimi kohta infot soovid: </lable>
+		<input type="number" name="filmIdInput" id="filmIdInput" min="1" max="<%= maxSql %>" value="0">
 		<input type="submit" name="filmIdSubmit" value="Otsi">
 	</form>
+	<br>
+	<% if (film && film.length > 0) { %>
+		<% film.forEach(function(movie) { %>
+		  <h3>Pealkiri</h3>
+		  <p><%= movie.title %></p>
+		  <h3>Valmimisaasta</h3>
+		  <p><%= movie.production_year %></p>
+		  <h3>Kestvus</h3>
+		  <p><%= movie.duration %></p>
+		  <h3>Kirjeldus</h3>
+		  <p><%= movie.description %></p>
+		<% }); %>
+	  <% } else { %>
+		<p>Tee oma valik ja näed andmeid siin.</p>
+	  <% } %>
 </body>
 </html>

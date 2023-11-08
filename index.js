@@ -119,9 +119,44 @@ app.post('/eestifilm/addfilmperson', (req, res) => {
 });
 
 app.get('/eestifilm/singlemovie', (req, res) => {
-    let maxSql = 'SELECT COUNT(id) FROM movie'
-    res.render('singlemovie', {maxSql: maxSql}); //vaata see üle, kas saab nii
+    let notice = '';
+    let maxSql = 'SELECT COUNT(id) AS maxCount FROM movie';
+    conn.query(maxSql, (err, result)=>{
+        if (err) {
+            notice = 'Andmepäringu viga!';
+            res.render('singlemovie', {notice: notice});
+            throw err;
+        } else {
+            let maxCount = result[0].maxCount;
+            let movieId = req.query.filmIdInput;
+            let sql = 'SELECT title, production_year, duration, description FROM `movie` WHERE id=(?)';
+            console.log(movieId)
+            conn.query(sql, [movieId], (err, result) => {
+                if (err) {
+                    notice = 'Andmepäringu viga!';
+                    res.render('singlemovie', { notice: notice });
+                  } else {
+                    console.log(result);
+                    res.render('singlemovie',{maxSql: maxCount, film: result});
+            }});
+        }
+    });
 });
+    //res.render('singlemovie', {maxSql: maxSql}); 
+//});
+
+//app.post('/eestifilm/singlemovie', (req,res) => {
+    //let movieSql = 'SELECT title, production_year, duration, description FROM `movie` WHERE id=';
+    //conn.query(sql, (err, result)=>{
+        //if (err) {
+            //res.render('singlemovie', {film: movieSql});
+            //throw err;
+        //} else {
+            //console.log(result);
+            //res.render('singlemovie', {film: result});
+       // }
+    //});
+//});
 
 
 //teha leht /eestifilm/singlemovie
