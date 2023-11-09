@@ -18,7 +18,8 @@ const conn = mysql.createConnection({
     host: dbInfo.configData.host,
     user: dbInfo.configData.user,
     password: dbInfo.configData.password,
-    database: dataBase
+    database: dbInfo.configData.database,
+    table: dbInfo.configData.table
 });
 
 app.get('/', (req, res) => {
@@ -130,43 +131,61 @@ app.get('/eestifilm/singlemovie', (req, res) => {
             let maxCount = result[0].maxCount;
             let movieId = req.query.filmIdInput;
             let sql = 'SELECT title, production_year, duration, description FROM `movie` WHERE id=(?)';
-            console.log(movieId)
+            //console.log(movieId)
             conn.query(sql, [movieId], (err, result) => {
                 if (err) {
                     notice = 'Andmepäringu viga!';
                     res.render('singlemovie', { notice: notice });
                   } else {
-                    console.log(result);
+                    //console.log(result);
                     res.render('singlemovie',{maxSql: maxCount, film: result});
             }});
         }
     });
 });
-    //res.render('singlemovie', {maxSql: maxSql}); 
-//});
+ 
+app.get('/news', (req, res) => {
+    res.render('news');
+});
 
-//app.post('/eestifilm/singlemovie', (req,res) => {
-    //let movieSql = 'SELECT title, production_year, duration, description FROM `movie` WHERE id=';
-    //conn.query(sql, (err, result)=>{
-        //if (err) {
-            //res.render('singlemovie', {film: movieSql});
-            //throw err;
-        //} else {
-            //console.log(result);
-            //res.render('singlemovie', {film: result});
-       // }
-    //});
-//});
+/*app.post('/eestifilm/addfilmperson', (req, res) => {
+    //res.render('addfilmperson');
+    //res.send(req.body);
+    let notice = '';
+    let sql = 'INSERT INTO person (first_name, last_name, birth_date) VALUES(?, ?, ?)';
+    conn.query(sql, [req.body.firstNameInput, req.body.lastNameInput, req.body.birthDateInput], (err, result)=>{
+        if (err) {
+            notice = 'Andmete salvestamine ebaõnnestus!';
+            res.render('addfilmperson', {notice: notice});
+            throw err;
+        } else {
+            notice = req.body.firstNameInput + ' ' + req.body.lastNameInput + ' salvestamine õnnestus!';
+            res.render('addfilmperson', {notice: notice});
+        }
+    });
+});*/
 
 
-//teha leht /eestifilm/singlemovie
-//loendame, mitu filmi on ja teeme vormi inputi <input type="number" min="1" max="x" value="1"> ja lisada submit nupp
-//x-ile tuleb väärtus index.js faili functionist SELECT COUNT(id) FROM movie
-//POST: lugeda andmebaasist kõik valitud numbriga filmi andmed ja ekraanile tuua
-//<h3>Pealkiri</h3>
-//<p>pealkiri</p>
-//<h3>Kestvus</h3>
-//<p>kestvus</p>
-//SELECT movie WHERE id=(vormis valitud number)
+app.get('/news/add', (req, res) => {
+    //res.render('addnews');
+    let notice = '';
+    let newsAddSql = 'INSERT INTO vp_news (title, content, expire) VALUES(?, ?, ?)';
+});
+
+app.get('/news/read', (req, res) => {
+    res.render('readnews');
+});
+
+app.get('/news/read/:id', (req, res) => {
+    //res.render('readnews');
+    res.send('Tahame uudist, mille ID on: ' + req.params.id);
+});
+
+app.get('/news/read/:id/:lang', (req, res) => {
+    //res.render('readnews');
+    console.log(req.params);
+    console.log(req.query);
+    res.send('Tahame uudist, mille ID on: ' + req.params.id);
+});
 
 app.listen(5134);
