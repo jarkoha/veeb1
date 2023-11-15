@@ -9,15 +9,18 @@
 	<h1>Loe uudiseid</h1>
 	<hr>
 	<ul>
-		<li><a href="/news">Uudiste avaleht</a></li>
+		<li><a href="/news/read">Loe veel uudiseid</a></li>
 		<li><a href="/">Avalehele</a></li>
 	</ul>
 	<hr>
-	<h2>Viimased uudised</h2>
-	<ul>
-        <% newsList.forEach(function(news) { %>
-            <li><a href="/news/read/<%= news.id %>"><%= news.title %></a></li>
-        <% }); %>
-    </ul>
+	<h2>Uudise detailid</h2>
+    
+    <% if (news) { %>
+        <h3><%= news.title %></h3>
+        <p>Lisatud: <%= news.created %></p>
+        <p><%= news.content %></p>
+    <% } else { %>
+        <p>News not found</p>
+    <% } %>
 </body>
 </html>

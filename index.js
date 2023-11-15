@@ -19,7 +19,7 @@ const conn = mysql.createConnection({
     user: dbInfo.configData.user,
     password: dbInfo.configData.password,
     database: dbInfo.configData.database,
-    table: dbInfo.configData.table
+    //table: dbInfo.configData.table
 });
 
 app.get('/', (req, res) => {
@@ -148,44 +148,67 @@ app.get('/news', (req, res) => {
     res.render('news');
 });
 
-/*app.post('/eestifilm/addfilmperson', (req, res) => {
-    //res.render('addfilmperson');
-    //res.send(req.body);
-    let notice = '';
-    let sql = 'INSERT INTO person (first_name, last_name, birth_date) VALUES(?, ?, ?)';
-    conn.query(sql, [req.body.firstNameInput, req.body.lastNameInput, req.body.birthDateInput], (err, result)=>{
-        if (err) {
-            notice = 'Andmete salvestamine ebaõnnestus!';
-            res.render('addfilmperson', {notice: notice});
-            throw err;
-        } else {
-            notice = req.body.firstNameInput + ' ' + req.body.lastNameInput + ' salvestamine õnnestus!';
-            res.render('addfilmperson', {notice: notice});
-        }
-    });
-});*/
-
-
 app.get('/news/add', (req, res) => {
-    //res.render('addnews');
-    let notice = '';
-    let newsAddSql = 'INSERT INTO vp_news (title, content, expire) VALUES(?, ?, ?)';
+    res.render('addnews');
 });
 
-app.get('/news/read', (req, res) => {
+app.post('/news/add', (req, res) => {
+    //res.render('addnews');
+    let notice = '';
+    let newsAddSql = 'INSERT INTO vp_news (title, content, expire, userid) VALUES(?, ?, ?, 1)';
+    conn.query(newsAddSql, [req.body.titleInput, req.body.contentInput, req.body.expireInput], (err, result) =>{
+        if (err) {
+            notice = 'Andmete salvestamine ebaõnnestus!';
+            res.render('addnews', {notice: notice});
+            throw err;
+        } else {
+            notice = req.body.titleInput + ' pealkirjaga uudise salvestamine õnnestus!';
+            res.render('addnews', {notice: notice});
+        }
+    });
+});
+
+/*app.get('/news/read', (req, res) => {
     res.render('readnews');
+});*/
+
+app.get('/news/read', (req, res) => {
+    let today = new Date().toISOString().split('T')[0];
+    let readNewsSql = 'SELECT * FROM vp_news WHERE expire > "2023-11-15" AND deleted IS NULL ORDER BY id DESC';
+    conn.query(readNewsSql, [today], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            let newsList = result;
+            res.render('readnews', {newsList: newsList });
+        }
+    });
 });
 
 app.get('/news/read/:id', (req, res) => {
     //res.render('readnews');
-    res.send('Tahame uudist, mille ID on: ' + req.params.id);
+    let id = req.params.id;
+    let newsSql = 'SELECT * FROM vp_news WHERE id = ? AND deleted IS NULL';
+    conn.query(newsSql, [id], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            if (result.length > 0) {
+                const newsItem = result[0];
+                res.render('newsdetail', { news: newsItem });
+            } else {
+                throw err;
+            }
+        }
+    });
+    //res.send('Tahame uudist, mille ID on: ' + req.params.id);
 });
 
-app.get('/news/read/:id/:lang', (req, res) => {
+/*app.get('/news/read/:id/:lang', (req, res) => {
     //res.render('readnews');
     console.log(req.params);
     console.log(req.query);
     res.send('Tahame uudist, mille ID on: ' + req.params.id);
-});
+});*/
 
 app.listen(5134);
