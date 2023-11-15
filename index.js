@@ -174,7 +174,7 @@ app.post('/news/add', (req, res) => {
 
 app.get('/news/read', (req, res) => {
     let today = new Date().toISOString().split('T')[0];
-    let readNewsSql = 'SELECT * FROM vp_news WHERE expire > "2023-11-15" AND deleted IS NULL ORDER BY id DESC';
+    let readNewsSql = 'SELECT * FROM vp_news WHERE expire > ? AND deleted IS NULL ORDER BY id DESC';
     conn.query(readNewsSql, [today], (err, result) => {
         if (err) {
             throw err;
