@@ -1,3 +1,7 @@
 Uudised
 
 CREATE TABLE `if23_jarkoha`.`vp_news` (`id` INT(11) NOT NULL , `title` VARCHAR(140) NOT NULL , `content` VARCHAR(2000) NOT NULL , `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `expire` DATE NOT NULL , `userid` INT(11) NOT NULL , `deleted` DATETIME NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB; 
+
+Galerii fotod
+
+CREATE TABLE `if23_jarkoha`.`vp_gallery` (`id` INT(11) NOT NULL AUTO_INCREMENT , `filename` VARCHAR(140) NOT NULL , `originalname` VARCHAR(140) NULL , `alttext` VARCHAR(256) NULL , `privacy` INT(1) NOT NULL , `userid` INT(11) NOT NULL , `added` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `deleted` DATETIME NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB; 
