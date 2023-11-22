@@ -247,16 +247,19 @@ app.post('/photoupload', upload.single('photoInput'), (req, res) => {
 });
 
 app.get('/photogallery', (req, res) => {
-
-    //andmebaasist tuleb lugeda piltide id, filename ja alttekst
-    res.render('photogallery');
+	let photoList = [];
+	let sql = 'SELECT id,filename,alttext FROM vp_gallery WHERE privacy > 1 AND deleted IS NULL ORDER BY id DESC';
+	conn.execute(sql, (err,result)=>{
+		if (err){
+			throw err;
+			res.render('photogallery', {photoList : photoList});
+		}
+		else {
+			photoList = result;
+			console.log(result);
+			res.render('photogallery', {photoList : photoList});
+		}
+	});
 });
-
-/*app.get('/news/read/:id/:lang', (req, res) => {
-    //res.render('readnews');
-    console.log(req.params);
-    console.log(req.query);
-    res.send('Tahame uudist, mille ID on: ' + req.params.id);
-});*/
 
 app.listen(5134);
