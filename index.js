@@ -7,12 +7,13 @@ const timeInfo = require('./dateTimeET');
 const dateInfo = require('./dateTimeET');
 const dbInfo = require('../../vp23config');
 //Kuna rinde kasutab ajutiselt Inga andmebaasi, siis:
-const dataBase = 'if23_inga_pe_ta';
+//const dataBase = 'if23_inga_pe_ta';
 //fotode laadimiseks
 const multer = require('multer');
 //seadistame vahevara (middleware), mis määrab üleslaadimise kataloogi
 const upload = multer({dest: './public/gallery/orig/'});
 const sharp = require('sharp');
+const async = require('async');
 
 
 app.set('view engine', 'ejs'); //view mootor, ejs on üks paljudest mootoritest 
@@ -108,6 +109,45 @@ app.get('/eestifilm/filmiloend', (req, res) => {
 app.get('/eestifilm/addfilmperson', (req, res) => {
     res.render('addfilmperson');
 });
+
+app.get('/eestifilm/addfilmrelation', (req, res) => {
+    //kasutades async moodulit paneme mitu tegevust paralleelselt tööle
+    //kõigepealt loome tegevuste loendi
+    const myQueries = [
+        function(callback) {
+            conn.execute('SELECT id,first_name,last_name FROM person', (err, result) => {
+                if (err) {
+                    return callback(err);
+                } else {
+                    return callback(null, result);
+                }
+            });
+        }, 
+        function(callback) {
+            conn.execute('SELECT id,title FROM movie', (err, result) => {
+                if (err) {
+                    return callback(err);
+                } else {
+                    return callback(null, result);
+                }
+            });
+        } //siia saab juurde panna funktsioone komadega
+    ];
+//paneme kõik tegevused paralleelselt tööle, tulemuseks list ühendtulemustest
+    async.parallel(myQueries, (err, results) => {
+        if (err) {
+            throw err;
+        } else {
+            //siin kõik asjad, mis on vaja teha 
+            console.log(results);
+        }
+    });
+
+    res.render('addfilmrelation');
+});
+
+//kui on valitud näitleja, siis peab sisestama näitleja nime järgmises väljas
+//kui on valitud resižöör, siis tegelase nime field on disabled
 
 app.post('/eestifilm/addfilmperson', (req, res) => {
     //res.render('addfilmperson');
@@ -256,7 +296,6 @@ app.get('/photogallery', (req, res) => {
 		}
 		else {
 			photoList = result;
-			console.log(result);
 			res.render('photogallery', {photoList : photoList});
 		}
 	});
