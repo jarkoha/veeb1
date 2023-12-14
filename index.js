@@ -478,8 +478,59 @@ app.get('/photogallery', (req, res) => {
         }
     });
     //pool.getConnection lõppeb
-    
+});
 
+app.get('/throwingresults', (req, res) => {
+    const date = timeInfo.dateSportFormatted();
+    let topDistance = [];
+    let sqlD = 'SELECT number,result FROM throwing_results ORDER BY result DESC';
+    pool.getConnection((err, connection)=>{
+        if (err) {
+            throw err;
+        }
+        else {
+            //andmebaasi osa algab
+	        connection.execute(sqlD, (err,result)=>{
+		        if (err){
+			        throw err;
+			        res.render('throwingresults', {date: date});
+                    connection.release();
+		        } 
+                else {
+			        res.render('throwingresults', {date: date});
+                    connection.release();
+		        }
+	        });
+            //andmebaasi osa lõppeb
+        }
+    });
+    //pool.getConnection lõppeb
+});
+
+app.post('/throwingresults', (req, res) => {
+    const date = timeInfo.dateSportFormatted();
+    let notice = '';
+    let sql = 'INSERT INTO throwing_results (number, result, date) VALUES(?, ?, ?)';
+    pool.getConnection((err, connection)=>{
+        if (err) {
+            throw err;
+        }
+        else {
+            connection.execute(sql, [req.body.athleteNumber, req.body.attemptResult, req.body.attemptDate], (err, result)=>{
+                if (err) {
+                    notice = 'Andmete salvestamine ebaõnnestus!';
+                    res.render('throwingresults', {notice: notice, date: date});
+                    connection.release();
+                    throw err;
+                } 
+                else {
+                    notice = 'Salvestamine õnnestus!';
+                    res.render('throwingresults', {notice: notice, date: date});
+                    connection.release();
+                }
+            });
+        }
+    });
 });
 
 function checkLogin(req, res, next){
@@ -501,3 +552,12 @@ function checkLogin(req, res, next){
 }
 
 app.listen(5134);
+
+//eksamil on vaja luua marsruut või mitu marsruuti
+//kindlasti andmebaasist väljastamine ja andmebaasi kirjutamine
+//SQL kohta võib küsimusi küsida eksami ajal
+//HTML kohta ka??
+//aega 10.00-14.30
+//võib kasutada tundides tehtud materjale, kopeerida tundides tehtud asju
+//Eksami teeme Veeb1 kataloogi
+//SQL --- SELECT number, visketulemus ORDER BY visketulemus DESC LIMIT 3 (väljastab kolm tulemust ja paneb kahanevasse järekorda)

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jarl Koha, veebiproge 2023</title>
+</head>
+<body>
+	<img src="/banner/banner.png" alt="Veebiprogrammeerimise kursuse bänner">
+	<h1>Palliviske tulemused</h1>
+	<hr>
+	<ul>
+		<li><a href="/">Avalehele</a></li>
+	</ul>
+	<hr>
+	<h2>Lisa osleja ja tulemused</h2>
+	<form method="POST">
+		<lable for="athleteNumber">Osaleja võistlusnumber:</lable>
+		<input type="text" name="athleteNumber" id="athleteNumber" placeholder="Võistlusnumber" required>
+		<br>
+		<lable for="attemptResult">Viskekatse tulemus (meetrites):</lable>
+		<input type="number" name="attemptResult" id="attemptResult" step="0.01" placeholder="12.34" required>
+		<br>
+		<lable for="attemptDate">Viskekatse kuupäev:</lable>
+		<input type="date" name="attemptDate" id="attemptDate" value="<%= locals.date %>" required> <!--Value peaks olema tänane kuupäev--> 
+		<br>
+		<input type="submit" name="athleteSubmit" value="Salvesta tulemus">
+	</form>
+	<p><%= locals.notice || "Ootel!" %></p>
+	<br>
+	<br>
+	<
+</body>
+</html>

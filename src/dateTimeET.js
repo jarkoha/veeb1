@@ -5,6 +5,11 @@ const dateETFormatted = function(){
     return dateNow.getDate() + ". " + monthNamesET[dateNow.getMonth()] + " " + dateNow.getFullYear();
 }
 
+const dateSportFormatted = function() {
+    let dateNow = new Date();
+    return dateNow.getFullYear() + "-" + (dateNow.getMonth() +1) + "-" +dateNow.getDate();
+}
+
 const timeFormatted = function(){
     function addZero(i) {            //see osa on lisatud
         if (i < 10) {i = "0" + i}
@@ -69,4 +74,4 @@ const dateConverter = function (date, format){
 };
 
 //ekspordin kõik asjad
-module.exports = {dateETFormatted: dateETFormatted, timeFormatted: timeFormatted, monthsET: monthNamesET, timeOfDayET: timeOfDayET, dateConverter: dateConverter};
+module.exports = {dateETFormatted: dateETFormatted, timeFormatted: timeFormatted, monthsET: monthNamesET, timeOfDayET: timeOfDayET, dateConverter: dateConverter, dateSportFormatted: dateSportFormatted};
