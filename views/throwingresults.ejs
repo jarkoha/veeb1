@@ -28,6 +28,60 @@
 	<p><%= locals.notice || "Ootel!" %></p>
 	<br>
 	<br>
-	<
+	<style>
+		th, td {
+			text-align: center;
+			padding: 8px 10px; /* Adjust padding as needed */
+		}
+		table {
+			width: 70%; /* Make the table take full width of container */
+			border-collapse: separate; /* Ensures that spacing works correctly */
+			border-spacing: 0 15px; /* Adjusts vertical spacing between rows */
+		}
+	</style>
+	<h2>Parimad võistlejad</h2>
+    <% if (topResults && topResults.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Parim tulemus (meetrites)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% topResults.forEach(function(row) { %>
+                    <tr>
+                        <td><%= row.number %></td>
+                        <td><%= row.best_result.toFixed(2) %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Parimaid võistlejaid ei ole.</p>
+    <% } %>
+
+	<h2>Tulemused</h2>
+	<% if (results && results.length > 0) { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Kuupäev</th>
+                <th>Viskekatse tulemus (meetrites)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% results.forEach(function(row) { %>
+                <tr>
+                    <td><%= new Date(row.date).toLocaleDateString('en-GB') %></td>
+                    <td><%= row.result.toFixed(2) %></td>
+                    
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+	<% } else { %>
+    <p>Andmed kuvatakse peale võistleja tulemuse sisestamist.</p>
+	<% } %>
 </body>
 </html>

@@ -482,35 +482,34 @@ app.get('/photogallery', (req, res) => {
 
 app.get('/throwingresults', (req, res) => {
     const date = timeInfo.dateSportFormatted();
-    let topDistance = [];
-    let sqlD = 'SELECT number,result FROM throwing_results ORDER BY result DESC';
-    pool.getConnection((err, connection)=>{
-        if (err) {
-            throw err;
-        }
-        else {
-            //andmebaasi osa algab
-	        connection.execute(sqlD, (err,result)=>{
-		        if (err){
-			        throw err;
-			        res.render('throwingresults', {date: date});
-                    connection.release();
-		        } 
-                else {
-			        res.render('throwingresults', {date: date});
-                    connection.release();
-		        }
-	        });
-            //andmebaasi osa lõppeb
-        }
+    // Query to fetch the top three unique competitors with their best result
+    let sqlTopThree = `SELECT number, MAX(result) as best_result
+                       FROM throwing_results
+                       GROUP BY number
+                       ORDER BY best_result DESC
+                       LIMIT 3`;
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err;
+        
+        connection.query(sqlTopThree, (err, topResults) => {
+            if (err) {
+                // Handle error, possibly render with an error message
+                res.render('throwingresults', { date: date, results: [], topResults: [], notice: "Viga parimate tulemuste laadimisel." });
+            } else {
+                // Render with top results
+                res.render('throwingresults', { date: date, results: [], topResults: topResults, notice: "" });
+            }
+            connection.release();
+        });
     });
-    //pool.getConnection lõppeb
 });
 
-app.post('/throwingresults', (req, res) => {
+/*app.post('/throwingresults', (req, res) => {
     const date = timeInfo.dateSportFormatted();
     let notice = '';
     let sql = 'INSERT INTO throwing_results (number, result, date) VALUES(?, ?, ?)';
+    let sqlFetch = 'SELECT * FROM throwing_results WHERE number = ? ORDER BY result DESC';
     pool.getConnection((err, connection)=>{
         if (err) {
             throw err;
@@ -524,14 +523,84 @@ app.post('/throwingresults', (req, res) => {
                     throw err;
                 } 
                 else {
-                    notice = 'Salvestamine õnnestus!';
-                    res.render('throwingresults', {notice: notice, date: date});
+                    connection.execute(sqlFetch, [req.body.athleteNumber], (err, results) => {
+                        if (err) {
+                            notice = 'Tulemuste laadimine ebaõnnestus!';
+                            res.render('throwingresults', { notice: notice, date: date });
+                        } 
+                        else{
+                            notice = 'Salvestamine õnnestus!';
+                            res.render('throwingresults', {notice: notice, date: date, results: results});
+                            connection.release();
+                        }
+                    
+                })
+            }
+        });
+        }
+    });
+});*/
+
+app.post('/throwingresults', (req, res) => {
+    const date = timeInfo.dateSportFormatted();
+    let notice = '';
+    let sqlCheck = 'SELECT * FROM throwing_results WHERE number = ? AND date = ?';
+
+    pool.getConnection((err, connection) => {
+        if (err) throw err;
+
+        connection.query(sqlCheck, [req.body.athleteNumber, req.body.attemptDate], (err, results) => {
+            if (err) {
+                notice = 'Andmete ebakõla!';
+                res.render('throwingresults', { notice: notice, date: date, results: [] });
+                connection.release();
+            } else if (results.length > 0 && req.body.attemptResult > results[0].result) {
+                let sqlUpdate = 'UPDATE throwing_results SET result = ? WHERE number = ? AND date = ?';
+                connection.query(sqlUpdate, [req.body.attemptResult, req.body.athleteNumber, req.body.attemptDate], (err, updateResult) => {
+                    fetchAndRenderResults();
+                });
+            } else if (results.length === 0) {
+                let sqlInsert = 'INSERT INTO throwing_results (number, result, date) VALUES (?, ?, ?)';
+                connection.query(sqlInsert, [req.body.athleteNumber, req.body.attemptResult, req.body.attemptDate], (err, insertResult) => {
+                    fetchAndRenderResults();
+                });
+            } else {
+                fetchAndRenderResults();
+            }
+        });
+
+        function fetchAndRenderResults() {
+            // Existing query to fetch individual results
+            connection.query('SELECT * FROM throwing_results WHERE number = ? ORDER BY result DESC', [req.body.athleteNumber], (err, individualResults) => {
+                if (err) {
+                    // Handle error for individual results
+                    notice = 'Tulemuste laadimine ebaõnnestus!';
+                    res.render('throwingresults', { notice: notice, date: date, results: individualResults, topResults: [] });
                     connection.release();
+                } else {
+                    // New query to fetch top three unique competitors
+                    let sqlTopThree = `SELECT number, MAX(result) as best_result
+                                       FROM throwing_results
+                                       GROUP BY number
+                                       ORDER BY best_result DESC
+                                       LIMIT 3`;
+                    connection.query(sqlTopThree, (err, topResults) => {
+                        if (err) {
+                            // Handle error for top results
+                            notice = 'Parimate tulemuste laadimine ebaõnnestus!';
+                        } else {
+                            // Success, render page with both individual and top results
+                            notice = 'Salvestamine õnnestus!';
+                            res.render('throwingresults', { notice: notice, date: date, results: individualResults, topResults: topResults });
+                        }
+                        connection.release();
+                    });
                 }
             });
         }
     });
 });
+
 
 function checkLogin(req, res, next){
     console.log('Kontrollime sisselogimist');
