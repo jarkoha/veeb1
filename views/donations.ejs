@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Jarl Koha, veebiproge eksam 21.12.2023</title>
+</head>
+<body>
+	<img src="/banner/banner.png" alt="Veebiprogrammeerimise kursuse bänner">
+	<h1>Annetused</h1>
+	<hr>
+	<h2>Tee oma annetus</h2>
+	<form method="POST">
+		<lable for="organization">Organisatsioon: </lable>
+		<select name="organization" id="organization" required>
+			<% organizations.forEach(function(org) { %>
+                <option value="<%= org.id %>"><%= org.name %></option>
+            <% }); %>
+        </select>
+		<p>Kui palju soovite annetada?</p>
+    <div>
+        <input type="radio" id="donation5" name="donationAmount" value="5">
+        <label for="donation5">5 €</label>
+    </div>
+    <div>
+        <input type="radio" id="donation10" name="donationAmount" value="10">
+        <label for="donation10">10 €</label>
+    </div>
+    <div>
+        <input type="radio" id="donation25" name="donationAmount" value="25">
+        <label for="donation25">25 €</label>
+    </div>
+    <div>
+		<input type="radio" id="donationCustom" name="donationAmount" value="custom" onclick="showCustomAmount()">
+		<label for="donationCustom">Muu summa</label>
+		<input type="number" id="customAmount" name="customAmount" style="display: none;" placeholder="Sisesta summa" oninput="updateDonationAmount()">
+	</div>
+	<br>
+    <input type="submit" name="donationSubmit" value="Saada annetus">
+	</form>
+	<br>
+	<p><%= locals.notice || "Ootel!" %></p>
+	<hr>
+	<table style="width:50%; border-collapse: collapse;">
+		<thead>
+			<tr>
+				<th style="text-align: left; padding: 8px;">Organisatsioon</th>
+				<th style="text-align: center; padding: 8px;">Kokku annetatud</th>
+				<th style="text-align: center; padding: 8px;">Annetatud kordi</th>
+				<th style="text-align: center; padding: 8px;">Keskmine annetus</th>
+				<th style="text-align: center; padding: 8px;">Suurim annetus</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% organizations.forEach(function(org) { %>
+			<tr>
+				<td><%= org.name %></td>
+				<td style="text-align: center;"><%= org.total_donated %> €</td>
+				<td style="text-align: center;"><%= org.donation_count %></td>
+				<td style="text-align: center;">
+					<% if (org.total_donated !== null && org.donation_count !== 0) { %>
+						<%= (org.total_donated / org.donation_count).toFixed(2) %> €
+					<% } else { %>
+						N/A
+					<% } %>
+				</td>
+				<td style="text-align: center;"><%= org.max_donated %> €</td>
+			</tr>
+			<% }); %>
+		</tbody>
+	</table>
+	<script>
+		function showCustomAmount() {
+			document.getElementById("customAmount").style.display = "block";
+		}
+	</script>
+</body>
+</html>
